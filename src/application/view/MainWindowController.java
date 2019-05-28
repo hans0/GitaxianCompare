@@ -90,7 +90,11 @@ public class MainWindowController {
     	//System.out.println();
     	
         if (file != null) {
-            openFile(file);
+        	if (tf.equals(this.oldDeckTextField)) {
+        		openFile(file, deckCompare.old);
+        	} else {
+        		openFile(file, !deckCompare.old);
+        	}
         	tf.setText(file.getAbsolutePath());
         }
     }
@@ -100,7 +104,7 @@ public class MainWindowController {
     	//System.out.println("got calculate without crashing");
 
     	// null checks
-    	
+    	differenceArea.setText("");
     	boolean oldDeckLoaded = !oldDeckTextField.getText().equals(""), 
     			newDeckLoaded =  !newDeckTextField.getText().equals("");
     	if (!oldDeckLoaded || !newDeckLoaded) {
@@ -115,29 +119,20 @@ public class MainWindowController {
     	if (oldDeckTextField.getText().indexOf("http") != -1) {
     		//System.out.println("old deck website detected");
     		deckCompare.loadDeck(
-    				deckCompare.downloadDeck(oldDeckTextField.getText())
+    				deckCompare.downloadDeck(oldDeckTextField.getText(), deckCompare.old), deckCompare.old
     				);
-    		deckCompare.switchFile();
+    		//deckCompare.switchFile();
     	}
     	if (newDeckTextField.getText().indexOf("http") != -1) {
     		//System.out.println("new deck website detected");
     		deckCompare.loadDeck(
-    				deckCompare.downloadDeck(newDeckTextField.getText())
+    				deckCompare.downloadDeck(newDeckTextField.getText(), !deckCompare.old), !deckCompare.old
     				);
-    		deckCompare.switchFile();
+    		//deckCompare.switchFile();
     	}
     	
     	
-    	
-    	// if webpage, download the relevant, then delete
-    	// if old deck string, grab 
-    	if (oldDeckTextField.getText() != null && newDeckTextField.getText() != null) {
-    		//System.out.println("here");
-    		differenceArea.setText("no");
-    		differenceArea.appendText("... but maybe yes");
-
-    	}
-    	System.out.println(deckCompare.compare());
+    	//System.out.println(deckCompare.compare());
     	differenceArea.setText(deckCompare.compare());
     	
     	
@@ -148,10 +143,10 @@ public class MainWindowController {
 
     }
     
-    public void openFile(File file) {
+    public void openFile(File file, boolean old) {
     	//System.out.println("got here without crashing");
-    	deckCompare.loadDeck(file);
-    	deckCompare.switchFile();
+    	deckCompare.loadDeck(file, old);
+    	//deckCompare.switchFile();
     }
     
     

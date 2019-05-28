@@ -32,26 +32,48 @@ public class DeckCompare {
 	String oldDeckFilepath;
 	String newDeckFilepath;
 	
-	boolean old;
+	public boolean old;
 	
 	public DeckCompare() {
 		oldDeckHashmap = new HashMap<String, Integer>();
 		newDeckHashmap = new HashMap<String, Integer>();
-		oldDeckFilepath = "/Users/hans/decks/oldDeck.txt";
-		newDeckFilepath = "/Users/hans/decks/newDeck.txt";
+		// should really fix this
+		oldDeckFilepath = System.getProperty("user.home") + "/decks/oldDeck.txt";
+		newDeckFilepath = System.getProperty("user.home") + "/decks/newDeck.txt";
 		old = true;
+	}
+	
+	
+	public boolean isWindows() {
+		return System.getProperty("os.name").indexOf("Windows") != -1;
+	}
+	
+	public boolean isMacOS() {
+		return System.getProperty("os.name").indexOf("Mac") != -1;
+	}
+	
+	public boolean isLinux() {
+		return false;
+	}
+	
+	public HashMap<String, Integer> getOldDeckHashmap() {
+		return this.oldDeckHashmap;
+	}
+	
+	public HashMap<String, Integer> getNewDeckHashmap() {
+		return this.newDeckHashmap;
 	}
 	
 	
 	// Need to add methods to flush the Hashmap
 	
-	
+	/*
 	public void switchFile() {
 		this.old = !this.old;
 	}
+	*/
 	
-	
-	public File downloadDeck(String s) {
+	public File downloadDeck(String s, boolean old) {
 		File result = null;
 		URL website = null;
 		try {
@@ -76,10 +98,9 @@ public class DeckCompare {
 		return result;
 	}
 	
-	public boolean loadDeck(File f) {
+	public boolean loadDeck(File f, boolean old) {
 		Scanner sc;
-		// Just to figure out where we are
-		// System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		
 		// This is a regex pattern to extract the numbers
 		Pattern p = Pattern.compile("\\d+");
 		Matcher m;
@@ -87,6 +108,9 @@ public class DeckCompare {
 		
 		if (old) current = oldDeckHashmap;
 		else current = newDeckHashmap;
+		
+		current.clear();
+
 		
 		String currentLine, currentCard;
 		Integer i;
@@ -105,7 +129,6 @@ public class DeckCompare {
 				}
 				// We're going to hit blank lines
 				if (currentLine.equals("") || currentLine.equals("\n") || currentLine.indexOf("//") != -1){
-					System.out.println("commented out line");
 					continue;
 				}
 				// This is how we regex
@@ -147,10 +170,8 @@ public class DeckCompare {
 		ArrayList<String> additions = new ArrayList<String>();
 		ArrayList<String> deletions = new ArrayList<String>();
 		Set<String> set = newDeckHashmap.keySet();
-		//System.out.println("newDeck hash map");
 		for (String s: set) {
 			
-			System.out.println(s);
 			if (!oldDeckHashmap.containsKey(s)) {
 				additions.add(newDeckHashmap.get(s) + " " + s);
 			} else if (oldDeckHashmap.containsKey(s)) {
@@ -158,6 +179,8 @@ public class DeckCompare {
 				n = newDeckHashmap.get(s);
 				if (o != n) {
 					if (o > n) {
+						//System.out.println("||" + s + "||");
+
 						deletions.add((n - o) + " " + s);
 					} else {
 						additions.add((n - o) + " " + s);
@@ -167,18 +190,15 @@ public class DeckCompare {
 		}
 		
 		set = oldDeckHashmap.keySet();
-		//System.out.println("old Deck hash map");
+
 		for (String s: set) {
-			//System.out.println(s);
 			if (!newDeckHashmap.containsKey(s)) {
 				deletions.add(0 - oldDeckHashmap.get(s) + " " + s);
 			}
 		}
 		Collections.sort(additions, new SortByName());
 		Collections.sort(deletions, new SortByName());
-		
-		//System.out.println("Difference");
-		
+				
 		for (String s: additions) result.append(s + '\n');
 		for (String s: deletions) result.append(s + '\n');
 		
