@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+// A Comparator to sort by name after I've inserted the number into the String
 class SortByName implements Comparator<String> {
 	public int compare(String s1, String s2) {
 		int index1 = s1.indexOf(' ');
